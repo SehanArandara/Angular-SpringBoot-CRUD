@@ -5,7 +5,9 @@ import com.example.demo.Repo.EmployeeRepo;
 import com.example.demo.entity.Employee;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +26,15 @@ public class EmployeeService
         return employeeRepo.findAll();
     }
 
-    public Optional<Employee> getEmployeeById( Long empId){
-        return employeeRepo.findById( empId );
+    public Employee getEmployeeById( Long empId){
+        Optional<Employee> tempEmoployee = employeeRepo.findById( empId );
+        if(tempEmoployee.isPresent()){
+            Employee employee = tempEmoployee.get();
+            return employee;
+        }
+        else{
+            return null;
+        }
     }
 
 //    public List<Employee> deleteEmployee( String des )
@@ -49,4 +58,25 @@ public class EmployeeService
         employeeRepo.deleteById( id );
         return true;
     }
+
+    // update
+    public Employee updateEmployee(Long id, Employee employeeDetails){
+        Optional<Employee> tempEmoployee = employeeRepo.findById( id );
+        if(tempEmoployee.isPresent()){
+            Employee employee = tempEmoployee.get();
+            employee.setAge( employeeDetails.getAge() );
+            employee.setActive( employeeDetails.isActive() );
+            employee.setName( employeeDetails.getName() );
+            employee.setSalary( employeeDetails.getSalary() );
+            employee.setDesignation( employeeDetails.getDesignation( ) );
+            employee.setPhoneNumber( employeeDetails.getPhoneNumber() );
+            employeeRepo.save( employee );
+            return  employee;
+        }
+        else{
+            return null;
+        }
+    }
+
+
 }
